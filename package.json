@@ -8,7 +8,9 @@
     "three": "^0.156.1"
   },
   "devDependencies": {
+    "autoprefixer": "^10.4.16",
     "gsap": "^3.12.2",
+    "postcss": "^8.4.30",
     "vite": "^4.4.9",
     "vite-plugin-string": "^1.2.1"
   }
