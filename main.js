@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import vertexShader from './shaders/vertex.glsl';
 import fragmentShader from './shaders/fragment.glsl'
 import gsap from "gsap"
+const canvasContainer = document.querySelector('#canvasContainer')
 
 console.log(vertexShader);
 
@@ -12,17 +13,21 @@ console.log(vertexShader);
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
     75,
-    innerWidth / innerHeight,
+    canvasContainer.offsetWidth / canvasContainer.offsetHeight,
     0.1,
     1000
 )
 
 const renderer = new THREE.WebGL1Renderer({
-    antialias: true
+    antialias: true,
+    canvas: document.querySelector('canvas')
 })
-renderer.setSize(innerWidth, innerHeight)
+
+console.log(canvasContainer)
+
+renderer.setSize(canvasContainer.offsetWidth, canvasContainer.offsetHeight)
 renderer.setPixelRatio(window.devicePixelRatio)
-document.body.appendChild(renderer.domElement)
+// document.body.appendChild(renderer.domElement)
 
 // create spehre 
 const spehre = new THREE.Mesh(
