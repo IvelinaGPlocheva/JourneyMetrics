@@ -46,24 +46,24 @@ const spehre = new THREE.Mesh(
         }
     })
 )
-// scene.add(spehre)
+// scene.add(sphere)
 
-//  create atmospehre
-const atmospehre = new THREE.Mesh(
+//  create atmosphere
+const atmosphere = new THREE.Mesh(
     new THREE.SphereGeometry(5, 50, 50),
     new THREE.ShaderMaterial({
-        vertexShader: atmospehreVertexShader,
-        fragmentShader: atmospehreFragmentShader,
+        vertexShader: atmosphereVertexShader,
+        fragmentShader: atmosphereFragmentShader,
         blending : THREE.AdditiveBlending,
         side: THREE.BackSide
     })
 )
 
-atmospehre.scale.set(1.1, 1.1, 1.1)
-scene.add(atmospehre)
+atmosphere.scale.set(1.1, 1.1, 1.1)
+scene.add(atmosphere)
 
 const group = new THREE.Group()
-group.add(spehre)
+group.add(sphere)
 scene.add(group)
 
 const starGeometry = new THREE.BufferGeometry()
