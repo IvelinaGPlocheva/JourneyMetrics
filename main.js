@@ -4,11 +4,11 @@ import fragmentShader from './shaders/fragment.glsl'
 import gsap from "gsap"
 const canvasContainer = document.querySelector('#canvasContainer')
 
-console.log(vertexShader);
+// console.log(vertexShader);
 
-import atmospehreVertexShader from './shaders/atmospehreVertex.glsl';
-import atmospehreFragmentShader from './shaders/atmospehreFragment.glsl'
-console.log(vertexShader);
+import atmosphereVertexShader from './shaders/atmosphereVertex.glsl';
+import atmosphereFragmentShader from './shaders/atmosphereFragment.glsl'
+// console.log(vertexShader);
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
@@ -23,14 +23,14 @@ const renderer = new THREE.WebGL1Renderer({
     canvas: document.querySelector('canvas')
 })
 
-console.log(canvasContainer)
+// console.log(canvasContainer)
 
 renderer.setSize(canvasContainer.offsetWidth, canvasContainer.offsetHeight)
 renderer.setPixelRatio(window.devicePixelRatio)
 // document.body.appendChild(renderer.domElement)
 
-// create spehre 
-const spehre = new THREE.Mesh(
+// create sphere
+const sphere = new THREE.Mesh(
     new THREE.SphereGeometry(5, 50, 50),
     new THREE.ShaderMaterial({
         // map: new THREE.TextureLoader().load(
@@ -89,21 +89,67 @@ const stars = new THREE.Points(
 )
 scene.add(stars)
 
+
 camera.position.z = 15
 
+
+function createPoint(lat, lng) {
+    const point = new THREE.Mesh(
+        new THREE.SphereGeometry(0.05, 50, 50),
+        new THREE.MeshBasicMaterial({
+            color: 0xFF0000
+        })
+    )
+
+    // 23.6345° N, 102.5528° W - Mexico
+    // JS Math si and cos works only with radiants not degrees.
+    const latitude = (lat / 180) * Math.PI
+    const longitude = (lng / 180) * Math.PI
+    const radius = 5
+
+    // Formulas for getting point location on a sphere.
+    const x = radius * Math.cos(latitude) * Math.sin(longitude)
+    const y = radius * Math.sin(latitude)
+    const z = radius * Math.cos(latitude) * Math.cos(longitude)
+
+    point.position.x = x
+    point.position.y = y
+    point.position.z = z
+
+    group.add(point)
+}
 const mouse = {
     x: undefined,
     y: undefined
 }
 
+sphere.rotation.y = -Math.PI / 2
+
+// Mexico
+//negative latitudes are south of the equator.
+//negative longitudes are west of the Prime Meridian
+createPoint(23.6345, -102.5528)
+
+// 14.2350° S, 51.9253° W - Brazil
+createPoint(-14.2350, -51.9253)
+
+// 20.5937° N, 78.9629° E - India
+createPoint(20.5937, 78.9629)
+
+// 35.8617° N, 104.1954° E - China
+createPoint(35.8617, 104.1954)
+
+// 37.0902° N, 95.7129° W - USA
+createPoint(37.0902, -95.7129)
+
 function animate() {
 
     requestAnimationFrame(animate)
     renderer.render(scene, camera)
-    spehre.rotation.y += 0.002
+    // sphere.rotation.y += 0.002
     gsap.to(group.rotation, {
-        x: -mouse.y * 0.3,
-        y: mouse.x * 0.5,
+        x: -mouse.y * 1.5,
+        y: mouse.x * 1.5,
         duration: 2
     })
 
