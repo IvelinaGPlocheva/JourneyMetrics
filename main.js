@@ -120,8 +120,8 @@ function createPoint(lat, lng) {
     group.add(point)
 }
 const mouse = {
-    x: undefined,
-    y: undefined
+    x: 0,
+    y: 0
 }
 
 sphere.rotation.y = -Math.PI / 2
@@ -148,12 +148,14 @@ function animate() {
     requestAnimationFrame(animate)
     renderer.render(scene, camera)
     // sphere.rotation.y += 0.002
-    gsap.to(group.rotation, {
-        x: -mouse.y * 1.5,
-        y: mouse.x * 1.5,
-        duration: 2
-    })
 
+    if (mouse.x) {
+        gsap.to(group.rotation, {
+            x: -mouse.y * 1.5,
+            y: mouse.x * 1.5,
+            duration: 2
+        })
+    }
 }
 
 animate()
