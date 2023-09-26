@@ -86,9 +86,11 @@ camera.position.z = 15
 
 function createPoint(lat, lng) {
     const box = new THREE.Mesh(
-        new THREE.BoxGeometry(0.1, 0.1, 0.8),
+        new THREE.BoxGeometry(0.2, 0.2, 0.8),
         new THREE.MeshBasicMaterial({
-            color: "#3BF7FF"
+            color: "#3BF7FF",
+            opacity: 0.4,
+            transparent: true
         })
     )
 
@@ -113,7 +115,7 @@ function createPoint(lat, lng) {
     group.add(box)
 
     gsap.to(box.scale, {
-        z: 0,
+        z: 1.4,
         duration: 2,
         yoyo: true,
         repeat: -1,
@@ -146,25 +148,64 @@ createPoint(35.8617, 104.1954)
 // 37.0902° N, 95.7129° W - USA
 createPoint(37.0902, -95.7129)
 
+
+const raycaster = new THREE.Raycaster();
+const popUpElement = document.querySelector("#popUpElement")
 function animate() {
 
     requestAnimationFrame(animate)
     renderer.render(scene, camera)
-    // sphere.rotation.y += 0.002
+    group.rotation.y += 0.002
 
-    if (mouse.x) {
-        gsap.to(group.rotation, {
-            x: -mouse.y * 1.5,
-            y: mouse.x * 1.5,
-            duration: 2
+    // if (mouse.x) {
+    //     gsap.to(group.rotation, {
+    //         x: -mouse.y * 1.5,
+    //         y: mouse.x * 1.5,
+    //         duration: 2
+    //     })
+    // }
+
+    // update the picking ray with the camera and pointer position
+	raycaster.setFromCamera( mouse, camera );
+
+	// calculate objects intersecting the picking ray
+	const intersects = raycaster.intersectObjects( group.children.filter(mesh => {
+        return mesh.geometry.type === "BoxGeometry"
+    }));
+    group.children.forEach(mesh => {
+        mesh.material.opacity = 0.4
+    })
+
+    gsap.set(popUpElement, {
+        display: "none"
+    })
+
+	for ( let i = 0; i < intersects.length; i ++ ) {
+
+        // apply only on hover of our group
+        intersects[ i ].object.material.opacity = 1
+        gsap.set(popUpElement, {
+            display: "block"
         })
-    }
+	}
+
+	renderer.render( scene, camera );
+
+
 }
 
 animate()
 
 
-addEventListener('mousemove', () => {
-    mouse.x = (event.clientX / innerWidth) * 2 - 1
+addEventListener('mousemove', (event) => {
+
+    // Normalise mouse coordinates on the screen.
+    mouse.x = ((event.clientX - innerWidth / 2) / ( innerWidth / 2 )) * 2 - 1 
     mouse.y = -(event.clientY / innerHeight) * 2 + 1
+
+    gsap.set(popUpElement, {
+        x: event.clientX,
+        y: event.clientY,
+        
+    })
 })
