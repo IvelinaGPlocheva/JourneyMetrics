@@ -32,6 +32,14 @@ bin/docker-compose up
 
 This will start the Vite development server, and the project will be available at http://localhost:3000/. Thanks to Vite, you can expect lightning-fast HMR (Hot Module Replacement) as you develop.
 
+## API for country data
+
+We are using v2 of the api
+```
+https://restcountries.com/v2/all
+https://github.com/apilayer/restcountries/
+
+```
 
 Made with ❤️ using TailwindCSS, Vite, and Three.js.
 

@@ -5,10 +5,10 @@ import fragmentShader from './shaders/fragment.glsl'
 import gsap from "gsap"
 const canvasContainer = document.querySelector('#canvasContainer')
 
-
+import countries from './countries.json';
 import atmosphereVertexShader from './shaders/atmosphereVertex.glsl';
 import atmosphereFragmentShader from './shaders/atmosphereFragment.glsl'
-
+console.log(countries)
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
     75,
@@ -127,6 +127,59 @@ function createBox({lat, lng, country, population}) {
     box.population = population
 }
 
+
+
+function createBoxes(countries) {
+    countries.forEach(country => {
+        console.log(country)
+
+        const lat = country.latlng ? country.latlng[0] : null
+        const lng = country.latlng ? country.latlng[1] : null
+        const population = country.population
+
+        const box = new THREE.Mesh(
+            new THREE.BoxGeometry(0.2, 0.2, 0.8),
+            new THREE.MeshBasicMaterial({
+                color: "#3BF7FF",
+                opacity: 0.4,
+                transparent: true
+            })
+        )
+
+        // 23.6345° N, 102.5528° W - Mexico
+        // JS Math si and cos works only with radiants not degrees.
+        const latitude = (lat / 180) * Math.PI
+        const longitude = (lng / 180) * Math.PI
+        const radius = 5
+
+        // Formulas for getting point location on a sphere.
+        const x = radius * Math.cos(latitude) * Math.sin(longitude)
+        const y = radius * Math.sin(latitude)
+        const z = radius * Math.cos(latitude) * Math.cos(longitude)
+
+        box.position.x = x
+        box.position.y = y
+        box.position.z = z
+
+        box.lookAt(0, 0, 0)
+        box.geometry.applyMatrix4(new THREE.Matrix4().makeTranslation(0, 0, -0.4))
+
+        group.add(box)
+
+        gsap.to(box.scale, {
+            z: 1.4,
+            duration: 2,
+            yoyo: true,
+            repeat: -1,
+            ease: "linear",
+            delay: Math.random()
+        })
+
+        box.country = country.name
+        box.population = new Intl.NumberFormat().format(population)
+    })
+}
+
 const mouse = {
     x: 0,
     y: 0
@@ -134,47 +187,49 @@ const mouse = {
 
 sphere.rotation.y = -Math.PI / 2
 
+
+createBoxes(countries)
 // Mexico
 //negative latitudes are south of the equator.
 //negative longitudes are west of the Prime Meridian
-createBox({
-    lat: 23.6345,
-    lng: -102.5528,
-    country: "Mexico",
-    population: "127.6 million"
-})
+// createBox({
+//     lat: 23.6345,
+//     lng: -102.5528,
+//     country: "Mexico",
+//     population: "127.6 million"
+// })
 
-// 14.2350° S, 51.9253° W - Brazil
-createBox({
-    lat: -14.2350,
-    lng: -51.9253,
-    country: "Brazil",
-    population: "211 million"
-})
+// // 14.2350° S, 51.9253° W - Brazil
+// createBox({
+//     lat: -14.2350,
+//     lng: -51.9253,
+//     country: "Brazil",
+//     population: "211 million"
+// })
 
-// 20.5937° N, 78.9629° E - India
-createBox({
-    lat: 20.5937,
-    lng: 78.9629,
-    country: "India",
-    population: "1.366 bill"
-})
+// // 20.5937° N, 78.9629° E - India
+// createBox({
+//     lat: 20.5937,
+//     lng: 78.9629,
+//     country: "India",
+//     population: "1.366 bill"
+// })
 
-// 35.8617° N, 104.1954° E - China
-createBox({
-    lat: 35.8617,
-    lng: 104.1954,
-    country: "China",
-    population: "1.339 bill"
-})
+// // 35.8617° N, 104.1954° E - China
+// createBox({
+//     lat: 35.8617,
+//     lng: 104.1954,
+//     country: "China",
+//     population: "1.339 bill"
+// })
 
-// 37.0902° N, 95.7129° W - USA
-createBox({
-    lat: 37.0902,
-    lng: -95.7129,
-    country: "USA",
-    population: "328.3 mill"
-})
+// // 37.0902° N, 95.7129° W - USA
+// createBox({
+//     lat: 37.0902,
+//     lng: -95.7129,
+//     country: "USA",
+//     population: "328.3 mill"
+// })
 
 
 const raycaster = new THREE.Raycaster();
