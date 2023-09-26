@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -e
+
+SCRIPT_DIR=$(realpath $(dirname $0))
+
+mkdir -p "${SCRIPT_DIR}"/../.docker-volumes/home
+mkdir -p "${SCRIPT_DIR}"/../.docker-volumes/var
+
+RUNAS="$(id -u):$(id -g)" docker-compose -p project -f "${SCRIPT_DIR}"/docker-run-compose.yml "$@"
