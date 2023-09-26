@@ -367,3 +367,52 @@ addEventListener('mousemove', (event) => {
         })
     }
 })
+
+
+addEventListener('touchend', (event) => {
+    mouse.down = false
+})
+
+addEventListener('touchmove', (event) => {
+
+    // in mobile we have touch events
+    event.clientX = event.touches[0].clientX
+    event.clientY = event.touches[0].clientY
+
+    const doesIntersect = raycaster.intersectObject(sphere)
+
+    // if we dont intersect the spere don't run rest of code
+    if (doesIntersect.length > 0) mouse.down = true
+
+    if (mouse.down) {
+        const offset = canvasContainer.getBoundingClientRect().top
+        // Normalise mouse coordinates on the screen.
+        mouse.x = (event.clientX / innerWidth) * 2 - 1
+        mouse.y = -((event.clientY - offset) / innerHeight) * 2 + 1
+
+        gsap.set(popUpElement, {
+            x: event.clientX,
+            y: event.clientY,
+        })
+
+        // Prevent selecting text when moving the mouse.
+        event.preventDefault()
+
+        // Delta is a difference between 2 values and we want to rotatate based on the diff.
+        const deltaX = event.clientX - mouse.xPrev
+        mouse.xPrev = event.clientX
+
+        // same thing for the rotation on x
+        const deltaY = event.clientY - mouse.yPrev
+        mouse.yPrev = event.clientY
+
+        group.rotation.offset.x += deltaY * 0.005
+        group.rotation.offset.y += deltaX * 0.005
+
+        gsap.to(group.rotation, {
+            y: group.rotation.offset.y,
+            x: group.rotation.offset.x,
+            duration: 2
+        })
+    }
+}, {passive: false})
