@@ -189,7 +189,8 @@ function createBoxes(countries) {
 
 const mouse = {
     x: 0,
-    y: 0
+    y: 0,
+    down: false
 }
 
 sphere.rotation.y = -Math.PI / 2
@@ -249,7 +250,7 @@ function animate() {
 
     requestAnimationFrame(animate)
     renderer.render(scene, camera)
-    group.rotation.y += 0.002
+    // group.rotation.y += 0.002
 
     // if (mouse.x) {
     //     gsap.to(group.rotation, {
@@ -297,6 +298,16 @@ function animate() {
 
 animate()
 
+canvasContainer.addEventListener('mousedown', ({clientX, clientY}) => {
+    mouse.down = true
+    mouse.xPrev = clientX
+    mouse.yPrev = clientY
+
+})
+
+addEventListener('mouseup', (event) => {
+    mouse.down = false
+})
 
 addEventListener('mousemove', (event) => {
 
@@ -309,4 +320,16 @@ addEventListener('mousemove', (event) => {
         y: event.clientY,
         
     })
+
+    if (mouse.down) {
+        // Delta is a difference between 2 values and we want to rotatate based on the diff.
+        const deltaX = event.clientX - mouse.xPrev
+        group.rotation.y += deltaX * 0.005
+        mouse.xPrev = event.clientX
+
+        // same thing for the rotation on x
+        const deltaY = event.clientY - mouse.yPrev
+        group.rotation.x += deltaY * 0.003
+        mouse.yPrev = event.clientY
+    }
 })
