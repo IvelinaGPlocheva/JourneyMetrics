@@ -84,7 +84,7 @@ scene.add(stars)
 camera.position.z = 15
 
 
-function createPoint(lat, lng) {
+function createBox({lat, lng, country, population}) {
     const box = new THREE.Mesh(
         new THREE.BoxGeometry(0.2, 0.2, 0.8),
         new THREE.MeshBasicMaterial({
@@ -122,6 +122,9 @@ function createPoint(lat, lng) {
         ease: "linear",
         delay: Math.random()
     })
+
+    box.country = country
+    box.population = population
 }
 
 const mouse = {
@@ -134,23 +137,52 @@ sphere.rotation.y = -Math.PI / 2
 // Mexico
 //negative latitudes are south of the equator.
 //negative longitudes are west of the Prime Meridian
-createPoint(23.6345, -102.5528)
+createBox({
+    lat: 23.6345,
+    lng: -102.5528,
+    country: "Mexico",
+    population: "127.6 million"
+})
 
 // 14.2350° S, 51.9253° W - Brazil
-createPoint(-14.2350, -51.9253)
+createBox({
+    lat: -14.2350,
+    lng: -51.9253,
+    country: "Brazil",
+    population: "211 million"
+})
 
 // 20.5937° N, 78.9629° E - India
-createPoint(20.5937, 78.9629)
+createBox({
+    lat: 20.5937,
+    lng: 78.9629,
+    country: "India",
+    population: "1.366 bill"
+})
 
 // 35.8617° N, 104.1954° E - China
-createPoint(35.8617, 104.1954)
+createBox({
+    lat: 35.8617,
+    lng: 104.1954,
+    country: "China",
+    population: "1.339 bill"
+})
 
 // 37.0902° N, 95.7129° W - USA
-createPoint(37.0902, -95.7129)
+createBox({
+    lat: 37.0902,
+    lng: -95.7129,
+    country: "USA",
+    population: "328.3 mill"
+})
 
 
 const raycaster = new THREE.Raycaster();
 const popUpElement = document.querySelector("#popUpElement")
+const populationElement = document.querySelector("#populationElement")
+const populationElementValue = document.querySelector("#populationElementValue")
+
+
 function animate() {
 
     requestAnimationFrame(animate)
@@ -182,11 +214,18 @@ function animate() {
 
 	for ( let i = 0; i < intersects.length; i ++ ) {
 
+        const box = intersects[i].object
+
         // apply only on hover of our group
-        intersects[ i ].object.material.opacity = 1
+        box.material.opacity = 1
         gsap.set(popUpElement, {
             display: "block"
         })
+
+        // Make the element dynamic
+        populationElement.innerHTML = box.country
+        populationElementValue.innerHTML = box.population
+
 	}
 
 	renderer.render( scene, camera );
