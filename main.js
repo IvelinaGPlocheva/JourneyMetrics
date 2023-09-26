@@ -5,11 +5,9 @@ import fragmentShader from './shaders/fragment.glsl'
 import gsap from "gsap"
 const canvasContainer = document.querySelector('#canvasContainer')
 
-// console.log(vertexShader);
 
 import atmosphereVertexShader from './shaders/atmosphereVertex.glsl';
 import atmosphereFragmentShader from './shaders/atmosphereFragment.glsl'
-// console.log(vertexShader);
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
@@ -24,20 +22,13 @@ const renderer = new THREE.WebGL1Renderer({
     canvas: document.querySelector('canvas')
 })
 
-// console.log(canvasContainer)
-
 renderer.setSize(canvasContainer.offsetWidth, canvasContainer.offsetHeight)
 renderer.setPixelRatio(window.devicePixelRatio)
-// document.body.appendChild(renderer.domElement)
 
 // create sphere
 const sphere = new THREE.Mesh(
     new THREE.SphereGeometry(5, 50, 50),
     new THREE.ShaderMaterial({
-        // map: new THREE.TextureLoader().load(
-        //     'public/globe.jpg'
-        // )
-        // color: 0xFF0000
         vertexShader: vertexShader,
         fragmentShader: fragmentShader,
         uniforms: {
@@ -47,7 +38,6 @@ const sphere = new THREE.Mesh(
         }
     })
 )
-// scene.add(sphere)
 
 //  create atmosphere
 const atmosphere = new THREE.Mesh(
