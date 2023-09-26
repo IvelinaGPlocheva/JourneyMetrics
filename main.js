@@ -10,7 +10,7 @@ import atmosphereVertexShader from './shaders/atmosphereVertex.glsl';
 import atmosphereFragmentShader from './shaders/atmosphereFragment.glsl'
 console.log(countries)
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(
+let camera = new THREE.PerspectiveCamera(
     75,
     canvasContainer.offsetWidth / canvasContainer.offsetHeight,
     0.1,
@@ -302,6 +302,17 @@ function animate() {
 
 animate()
 
+addEventListener('resize', (event) => {
+    renderer.setSize(canvasContainer.offsetWidth, canvasContainer.offsetHeight)
+    camera = new THREE.PerspectiveCamera(
+        75,
+        canvasContainer.offsetWidth / canvasContainer.offsetHeight,
+        0.1,
+        1000
+    )
+    camera.position.z = 15
+})
+
 canvasContainer.addEventListener('mousedown', ({clientX, clientY}) => {
     mouse.down = true
     mouse.xPrev = clientX
@@ -315,16 +326,24 @@ addEventListener('mouseup', (event) => {
 
 addEventListener('mousemove', (event) => {
 
-    // Normalise mouse coordinates on the screen.
-    mouse.x = ((event.clientX - innerWidth / 2) / ( innerWidth / 2 )) * 2 - 1 
-    mouse.y = -(event.clientY / innerHeight) * 2 + 1
+    if (innerWidth >= 1280) {
+        // Normalise mouse coordinates on the screen.
+        mouse.x = ((event.clientX - innerWidth / 2) / ( innerWidth / 2 )) * 2 - 1 
+        mouse.y = -(event.clientY / innerHeight) * 2 + 1
+
+    } else {
+        const offset = canvasContainer.getBoundingClientRect().top
+        // Normalise mouse coordinates on the screen.
+        mouse.x = (event.clientX / innerWidth) * 2 - 1 
+        mouse.y = -((event.clientY - offset) / innerHeight) * 2 + 1
+        
+    }
 
     gsap.set(popUpElement, {
         x: event.clientX,
         y: event.clientY,
         
     })
-
     if (mouse.down) {
 
         // Prevent selecting text when moving the mouse.
