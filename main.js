@@ -3,12 +3,14 @@ import * as THREE from 'three';
 import vertexShader from './shaders/vertex.glsl';
 import fragmentShader from './shaders/fragment.glsl'
 import gsap from "gsap"
-const canvasContainer = document.querySelector('#canvasContainer')
 
 import countries from './countries.json';
 import atmosphereVertexShader from './shaders/atmosphereVertex.glsl';
 import atmosphereFragmentShader from './shaders/atmosphereFragment.glsl'
-console.log(countries)
+
+const canvasContainer = document.querySelector('#canvasContainer')
+
+// Initialize scene and camera.
 const scene = new THREE.Scene();
 let camera = new THREE.PerspectiveCamera(
     75,
@@ -17,6 +19,7 @@ let camera = new THREE.PerspectiveCamera(
     1000
 )
 
+// Set up a renderer.
 const renderer = new THREE.WebGL1Renderer({
     antialias: true,
     canvas: document.querySelector('canvas')
@@ -25,7 +28,7 @@ const renderer = new THREE.WebGL1Renderer({
 renderer.setSize(canvasContainer.offsetWidth, canvasContainer.offsetHeight)
 renderer.setPixelRatio(window.devicePixelRatio)
 
-// create sphere
+// Create the sphere using globe texture.
 const sphere = new THREE.Mesh(
     new THREE.SphereGeometry(5, 50, 50),
     new THREE.ShaderMaterial({
@@ -39,7 +42,7 @@ const sphere = new THREE.Mesh(
     })
 )
 
-//  create atmosphere
+// Create atmosphere.
 const atmosphere = new THREE.Mesh(
     new THREE.SphereGeometry(5, 50, 50),
     new THREE.ShaderMaterial({
@@ -57,6 +60,7 @@ const group = new THREE.Group()
 group.add(sphere)
 scene.add(group)
 
+// Add stars to the scene.
 const starGeometry = new THREE.BufferGeometry()
 const starMaterial = new THREE.PointsMaterial({
     color: 0xffffff
@@ -80,58 +84,12 @@ const stars = new THREE.Points(
 )
 scene.add(stars)
 
-
+// Adjust camera position.
 camera.position.z = 15
 
-
-function createBox({lat, lng, country, population}) {
-    const box = new THREE.Mesh(
-        new THREE.BoxGeometry(0.2, 0.2, 0.8),
-        new THREE.MeshBasicMaterial({
-            color: "#3BF7FF",
-            opacity: 0.4,
-            transparent: true
-        })
-    )
-
-    // 23.6345° N, 102.5528° W - Mexico
-    // JS Math si and cos works only with radiants not degrees.
-    const latitude = (lat / 180) * Math.PI
-    const longitude = (lng / 180) * Math.PI
-    const radius = 5
-
-    // Formulas for getting point location on a sphere.
-    const x = radius * Math.cos(latitude) * Math.sin(longitude)
-    const y = radius * Math.sin(latitude)
-    const z = radius * Math.cos(latitude) * Math.cos(longitude)
-
-    box.position.x = x
-    box.position.y = y
-    box.position.z = z
-
-    box.lookAt(0, 0, 0)
-    box.geometry.applyMatrix4(new THREE.Matrix4().makeTranslation(0, 0, -0.4))
-
-    group.add(box)
-
-    gsap.to(box.scale, {
-        z: 1.4,
-        duration: 2,
-        yoyo: true,
-        repeat: -1,
-        ease: "linear",
-        delay: Math.random()
-    })
-
-    box.country = country
-    box.population = population
-}
-
-
-
+// Create boxes.
 function createBoxes(countries) {
     countries.forEach(country => {
-        console.log(country)
 
         // Make scale based on a billion population countries
         const scale = country.population / 1000000000
@@ -201,48 +159,6 @@ group.rotation.offset = {
 }
 
 createBoxes(countries)
-// Mexico
-//negative latitudes are south of the equator.
-//negative longitudes are west of the Prime Meridian
-// createBox({
-//     lat: 23.6345,
-//     lng: -102.5528,
-//     country: "Mexico",
-//     population: "127.6 million"
-// })
-
-// // 14.2350° S, 51.9253° W - Brazil
-// createBox({
-//     lat: -14.2350,
-//     lng: -51.9253,
-//     country: "Brazil",
-//     population: "211 million"
-// })
-
-// // 20.5937° N, 78.9629° E - India
-// createBox({
-//     lat: 20.5937,
-//     lng: 78.9629,
-//     country: "India",
-//     population: "1.366 bill"
-// })
-
-// // 35.8617° N, 104.1954° E - China
-// createBox({
-//     lat: 35.8617,
-//     lng: 104.1954,
-//     country: "China",
-//     population: "1.339 bill"
-// })
-
-// // 37.0902° N, 95.7129° W - USA
-// createBox({
-//     lat: 37.0902,
-//     lng: -95.7129,
-//     country: "USA",
-//     population: "328.3 mill"
-// })
-
 
 const raycaster = new THREE.Raycaster();
 const popUpElement = document.querySelector("#popUpElement")
@@ -254,20 +170,11 @@ function animate() {
 
     requestAnimationFrame(animate)
     renderer.render(scene, camera)
-    // group.rotation.y += 0.002
 
-    // if (mouse.x) {
-    //     gsap.to(group.rotation, {
-    //         x: -mouse.y * 1.5,
-    //         y: mouse.x * 1.5,
-    //         duration: 2
-    //     })
-    // }
-
-    // update the picking ray with the camera and pointer position
+    // Update the picking ray with the camera and pointer position.
 	raycaster.setFromCamera( mouse, camera );
 
-	// calculate objects intersecting the picking ray
+	// Calculate objects intersecting the picking ray.
 	const intersects = raycaster.intersectObjects( group.children.filter(mesh => {
         return mesh.geometry.type === "BoxGeometry"
     }));
@@ -283,23 +190,19 @@ function animate() {
 
         const box = intersects[i].object
 
-        // apply only on hover of our group
+        // Apply only on hover of our group.
         box.material.opacity = 1
         gsap.set(popUpElement, {
             display: "block"
         })
 
-        // Make the element dynamic
+        // Make the element dynamic.
         populationElement.innerHTML = box.country
         populationElementValue.innerHTML = box.population
-
 	}
 
 	renderer.render( scene, camera );
-
-
 }
-
 animate()
 
 addEventListener('resize', (event) => {
@@ -317,7 +220,6 @@ canvasContainer.addEventListener('mousedown', ({clientX, clientY}) => {
     mouse.down = true
     mouse.xPrev = clientX
     mouse.yPrev = clientY
-
 })
 
 addEventListener('mouseup', (event) => {
@@ -342,8 +244,8 @@ addEventListener('mousemove', (event) => {
     gsap.set(popUpElement, {
         x: event.clientX,
         y: event.clientY,
-        
     })
+
     if (mouse.down) {
 
         // Prevent selecting text when moving the mouse.
@@ -353,7 +255,7 @@ addEventListener('mousemove', (event) => {
         const deltaX = event.clientX - mouse.xPrev
         mouse.xPrev = event.clientX
 
-        // same thing for the rotation on x
+        // Same thing for the rotation on x
         const deltaY = event.clientY - mouse.yPrev
         mouse.yPrev = event.clientY
 
@@ -375,13 +277,13 @@ addEventListener('touchend', (event) => {
 
 addEventListener('touchmove', (event) => {
 
-    // in mobile we have touch events
+    // In mobile we have touch events
     event.clientX = event.touches[0].clientX
     event.clientY = event.touches[0].clientY
 
     const doesIntersect = raycaster.intersectObject(sphere)
 
-    // if we dont intersect the spere don't run rest of code
+    // If we dont intersect the spere don't run rest of code.
     if (doesIntersect.length > 0) mouse.down = true
 
     if (mouse.down) {
@@ -402,7 +304,7 @@ addEventListener('touchmove', (event) => {
         const deltaX = event.clientX - mouse.xPrev
         mouse.xPrev = event.clientX
 
-        // same thing for the rotation on x
+        // Same thing for the rotation on x.
         const deltaY = event.clientY - mouse.yPrev
         mouse.yPrev = event.clientY
 
