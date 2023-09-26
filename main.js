@@ -322,6 +322,10 @@ addEventListener('mousemove', (event) => {
     })
 
     if (mouse.down) {
+
+        // Prevent selecting text when moving the mouse.
+        event.preventDefault()
+
         // Delta is a difference between 2 values and we want to rotatate based on the diff.
         const deltaX = event.clientX - mouse.xPrev
         group.rotation.y += deltaX * 0.005
