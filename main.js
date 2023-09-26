@@ -188,13 +188,17 @@ function createBoxes(countries) {
 }
 
 const mouse = {
-    x: 0,
-    y: 0,
+    x: undefined,
+    y: undefined,
     down: false
 }
 
 sphere.rotation.y = -Math.PI / 2
 
+group.rotation.offset = {
+    y: 0,
+    x: 0
+}
 
 createBoxes(countries)
 // Mexico
@@ -328,12 +332,19 @@ addEventListener('mousemove', (event) => {
 
         // Delta is a difference between 2 values and we want to rotatate based on the diff.
         const deltaX = event.clientX - mouse.xPrev
-        group.rotation.y += deltaX * 0.005
         mouse.xPrev = event.clientX
 
         // same thing for the rotation on x
         const deltaY = event.clientY - mouse.yPrev
-        group.rotation.x += deltaY * 0.003
         mouse.yPrev = event.clientY
+
+        group.rotation.offset.x += deltaY * 0.005
+        group.rotation.offset.y += deltaX * 0.005
+
+        gsap.to(group.rotation, {
+            y: group.rotation.offset.y,
+            x: group.rotation.offset.x,
+            duration: 2
+        })
     }
 })
