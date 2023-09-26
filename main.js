@@ -133,12 +133,19 @@ function createBoxes(countries) {
     countries.forEach(country => {
         console.log(country)
 
+        // Make scale based on a billion population countries
+        const scale = country.population / 1000000000
         const lat = country.latlng ? country.latlng[0] : null
         const lng = country.latlng ? country.latlng[1] : null
         const population = country.population
+        const zScale = 0.8 * scale
 
         const box = new THREE.Mesh(
-            new THREE.BoxGeometry(0.2, 0.2, 0.8),
+            new THREE.BoxGeometry(
+                Math.max(0.1, 0.2 * scale),
+                Math.max(0.1, 0.2 * scale),
+                Math.max(zScale, 0.4 * Math.random())
+            ),
             new THREE.MeshBasicMaterial({
                 color: "#3BF7FF",
                 opacity: 0.4,
@@ -162,7 +169,7 @@ function createBoxes(countries) {
         box.position.z = z
 
         box.lookAt(0, 0, 0)
-        box.geometry.applyMatrix4(new THREE.Matrix4().makeTranslation(0, 0, -0.4))
+        box.geometry.applyMatrix4(new THREE.Matrix4().makeTranslation(0, 0, -zScale/2))
 
         group.add(box)
 
