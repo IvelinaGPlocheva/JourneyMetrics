@@ -1,4 +1,4 @@
-# Voyge Vault - TailwindCSS + Vite + Three.js Project
+# Voyage Vault - TailwindCSS + Vite + Three.js Project
 
 ## Prerequisites
 
